@@ -1,0 +1,1 @@
+semmle-extractor-options: --respect-init False -F /home/taus/code/ql/python/ql/test/2/library-tests/respect_init/test/package_with_init/module_init.py -F /home/taus/code/ql/python/ql/test/2/library-tests/respect_init/test/package/module.py -F /home/taus/code/ql/python/ql/test/2/library-tests/respect_init/test/main.py
