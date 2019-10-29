@@ -221,7 +221,7 @@ class FastLocalsFunction extends Function {
 }
 
 /** A parameter. Either a Tuple or a Name (always a Name for Python 3) */
-class Parameter extends Parameter_ {
+class Parameter extends Parameter_, Expr {
 
     Parameter() {
         /* Parameter_ is just defined as a Name or Tuple, narrow to actual parameters */
@@ -234,7 +234,7 @@ class Parameter extends Parameter_ {
         )
     }
 
-    Location getLocation() {
+    override Location getLocation() {
         result = this.asName().getLocation()
         or
         result = this.asTuple().getLocation()
@@ -315,6 +315,10 @@ class Parameter extends Parameter_ {
      */
     predicate isKwargs() {
         exists(Function func | func.getKwarg() = this)
+    }
+
+    override string toString() {
+        result = Parameter_.super.toString()
     }
 
 }
