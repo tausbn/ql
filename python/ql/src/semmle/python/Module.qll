@@ -204,16 +204,17 @@ private string moduleNameFromBase(Container file) {
 string moduleNameFromFile(Container file) {
     exists(string basename |
         basename = moduleNameFromBase(file) and
-        legalShortName(basename) and
-        result = moduleNameFromFile(file.getParent()) + "." + basename
+        legalShortName(basename) |
+        result = moduleNameFromFile(file.getParent()) + "." + basename or
+        // Just return the basename if the file is in the root of the source location
+        file.getParent().getRelativePath() = "" and result = basename
     )
     or
     isPotentialSourcePackage(file) and
     result = file.getStem() and
-    (
-        not isPotentialSourcePackage(file.getParent()) or
-        not legalShortName(file.getParent().getBaseName())
-    )
+    // Do not consider the root of the source location to be a package
+    not  file.getRelativePath() = "" and
+    (not isPotentialSourcePackage(file.getParent()) or not legalShortName(file.getParent().getBaseName()))
     or
     result = file.getStem() and file.getParent() = file.getImportRoot()
     or
