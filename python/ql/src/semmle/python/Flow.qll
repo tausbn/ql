@@ -424,6 +424,23 @@ class CallNode extends ControlFlowNode {
     result.getNode() = this.getNode().getStarArg() and
     result.getBasicBlock().dominates(this.getBasicBlock())
   }
+
+  override string toString() { result = "CallNode for " + repr(this.getFunction()) + "(...)" }
+}
+
+/* Attempts to give a human-readable representation of the given node */
+private string repr(ControlFlowNode c) {
+  // For NameNodes, we just use the underlying variable name
+  result = c.(NameNode).getId()
+  or
+  exists(ControlFlowNode obj, string attr | obj = c.(AttrNode).getObject(attr) |
+    // Attributes of the form `name.name2`
+    result = obj.(NameNode).getId() + "." + attr
+    or
+    // Attributes where the object is a more complicated expression
+    not obj instanceof NameNode and
+    result = "(...)." + attr
+  )
 }
 
 /** A control flow corresponding to an attribute expression, such as `value.attr` */
@@ -462,6 +479,8 @@ class AttrNode extends ControlFlowNode {
   string getName() { exists(Attribute a | this.getNode() = a and a.getName() = result) }
 
   override Attribute getNode() { result = super.getNode() }
+
+  override string toString() { result = "AttrNode for " + repr(this) }
 }
 
 /** A control flow node corresponding to a `from ... import ...` expression */
@@ -722,6 +741,8 @@ class TupleNode extends SequenceNode {
       this.getBasicBlock().dominates(result.getBasicBlock())
     )
   }
+
+  override string toString() { result = "TupleNode for " + this.getNode().toString() }
 }
 
 /** A control flow node corresponding to a list expression, such as `[ 1, 3, 5, 7, 9 ]` */
@@ -736,6 +757,8 @@ class ListNode extends SequenceNode {
       this.getBasicBlock().dominates(result.getBasicBlock())
     )
   }
+
+  override string toString() { result = "ListNode for " + this.getNode().toString() }
 }
 
 class SetNode extends ControlFlowNode {
@@ -749,6 +772,8 @@ class SetNode extends ControlFlowNode {
       this.getBasicBlock().dominates(result.getBasicBlock())
     )
   }
+
+  override string toString() { result = "SetNode for " + this.getNode().toString() }
 }
 
 /** A control flow node corresponding to a dictionary literal, such as `{ 'a': 1, 'b': 2 }` */
@@ -769,6 +794,8 @@ class DictNode extends ControlFlowNode {
     exists(Dict d | this.getNode() = d and result.getNode() = d.getAValue()) and
     result.getBasicBlock().dominates(this.getBasicBlock())
   }
+
+  override string toString() { result = "DictNode for " + this.getNode().toString() }
 }
 
 private AstNode assigned_value(Expr lhs) {
@@ -920,6 +947,8 @@ class NameNode extends ControlFlowNode {
   predicate isGlobal() { Scopes::use_of_global_variable(this, _, _) }
 
   predicate isSelf() { exists(SsaVariable selfvar | selfvar.isSelf() and selfvar.getAUse() = this) }
+
+  override string toString() { result = "NameNode for " + this.getNode().toString() }
 }
 
 /** A control flow node corresponding to a named constant, one of `None`, `True` or `False`. */
